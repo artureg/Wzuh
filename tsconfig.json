@@ -1,0 +1,13 @@
+{
+  "include": [
+    "src"
+  ],
+  "compilerOptions": {
+    "lib": [
+      "esnext"
+    ],
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "experimentalDecorators": true
+  }
+}
