@@ -5,10 +5,10 @@ console.log("_______________________");
 
 
 const user1 = new UserDto();
-console.log(user1);
+console.log(JSON.stringify(user1));
 
 const user2 = new UserDto({email: "123", password: "123"});
-console.log(user2);
+console.log(JSON.stringify(user2));
 
 
 const entity3 = new UserEntity({
@@ -18,13 +18,13 @@ const entity3 = new UserEntity({
   postalCode: "123",
   birthDate: new Date(),
   email: "123",
-  firstName: "123",
-  lastName: "123",
+  firstName: "fN",
+  lastName: "lN",
   phone: "123",
   password: "123"
 })
 const user3 = new UserDto(entity3);
-console.log(user3);
+console.log(JSON.stringify(user3));
 
 
 //const user4 = new UserDto({});
