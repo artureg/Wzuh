@@ -1,7 +1,10 @@
 import {UserEntity} from "./UserEntity";
 import {Wzuh} from "./Wzuh";
 
-@Wzuh
+@Wzuh({
+  firstName: "lastName",
+  lastName: "firstName",
+})
 export class UserDto {
   constructor(params?: UserEntity | { email: string; password: string; }) {}
 
