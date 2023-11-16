@@ -1,18 +1,25 @@
 {
-  "name": "ts-node-template",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index",
+  "name": "Wzuh",
+  "version": "0.0.1",
+  "description": "Just wzuh!",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts"
+    "start": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "prebuild": "rimraf dist/"
   },
   "dependencies": {
-    "@types/node": "18.18.9",
-    "ts-node": "10.9.1",
-    "typescript": "5.2.2"
+    "@types/node": "^18.18.9"
   },
   "devDependencies": {
-    "nodemon": "2.0.0"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "nodemon": "^2.0.0",
+    "rimraf": "^3.0.2"
   },
-  "keywords": []
+  "files": [
+    "dist/**/*"
+  ],
+  "keywords": ["typescript", "node", "template"]
 }

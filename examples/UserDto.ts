@@ -1,5 +1,5 @@
 import {UserEntity} from "./UserEntity";
-import {Wzuh} from "./Wzuh";
+import {Wzuh} from "../src";
 
 @Wzuh({
   firstName: "lastName",
