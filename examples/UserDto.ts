@@ -1,27 +1,28 @@
 import {UserEntity} from "./UserEntity";
-import {Wzuh} from "../src";
-import { Mapable, WzuhParams } from '../src/Wzuh';
+import { Mappable, Mapper } from '../src/Wzuh';
 
-@Wzuh()
 export class UserDto {
-  constructor(@WzuhParams params?: UserEntity | { email: string; password: string; }) {}
+  constructor(params?: UserEntity | { email: string; password: string; }) {}
 
-  @Mapable()
+  @Mappable()
   email!: string;
-  @Mapable()
+  @Mappable()
   firstName!: string;
-  @Mapable('firstName')
+  @Mappable()
   lastName!: string;
-  @Mapable()
+  @Mappable()
   phone!: string;
-  @Mapable()
+  @Mappable()
   country!: string;
-  @Mapable()
+  @Mappable()
   city!: string;
-  @Mapable()
+  @Mappable()
   address!: string;
-  @Mapable()
+  @Mappable()
   postalCode!: string;
-  @Mapable()
+  @Mappable()
   birthDate!: Date;
+
+  @Mapper()
+  static fromUserEntity(userEntity: UserEntity) {}
 }

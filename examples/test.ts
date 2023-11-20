@@ -23,7 +23,7 @@ const entity3 = new UserEntity({
   phone: "123",
   password: "123"
 })
-const user3 = new UserDto(entity3);
+const user3 = UserDto.fromUserEntity(entity3);
 console.log(JSON.stringify(user3));
 
 

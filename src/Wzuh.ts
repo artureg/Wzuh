@@ -1,32 +1,33 @@
-export function Wzuh() {
-  return function<T extends { new (...args: any[]): {} }>(constructor: T) {
-    const keysMap = constructor.prototype.keysMap as Map<string, string> || undefined;
-    return class extends constructor {
-      constructor(...args: any[]) {
-        super();
-        const params = args.length > 0 ? args[0] : null;
-        if (keysMap && params && typeof params === 'object') {
-          keysMap.forEach((mapFrom, key) => {
-            if (params.hasOwnProperty(mapFrom)) {
-              this[key] = params[mapFrom];
-            }
-          })
-        }
-      }
-    };
-  }
-}
 
-export function Mapable(mapFrom?: string) {
+const keysMapKey = Symbol('keysMap');
+const keysKey = Symbol('keys');
+
+export function Mappable(mapFrom?: string) {
   return function(target: any, key: string) {
-    if (!target.constructor.prototype.keysMap) {
-      target.constructor.prototype.keysMap = new Map<string, string>();
-    }
-    target.constructor.prototype.keysMap.set(key, mapFrom || key);
+
+    const keysMap = Reflect.getOwnMetadata(keysMapKey, target.constructor) as Map<string, string> || new Map<string, string>();
+    keysMap.set(key, mapFrom || key);
+    Reflect.defineMetadata(keysMapKey, keysMap, target.constructor);
     // console.log(`${key} type: ${target.constructor.name}`);    
   }
 }
 
-export function WzuhParams(target: Object, propertyKey: string | symbol, parameterIndex: number) {
-  console.log(2);
+export function Mapper() {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const childFunction = descriptor.value!;
+    descriptor.value = (params) => {
+      const result =  new target();
+
+      const keysMap = Reflect.getOwnMetadata(keysMapKey, target) as Map<string, string> || undefined;
+      if (keysMap && params && typeof params === 'object') {
+        keysMap.forEach((mapFrom, key) => {
+          if (params.hasOwnProperty(mapFrom)) {
+            result[key] = params[mapFrom];
+          }
+        })
+      }
+
+      return result;
+    }
+  };
 }

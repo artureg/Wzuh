@@ -1,1 +1,2 @@
-export { Wzuh } from './Wzuh';
+import "reflect-metadata";
+export { Mapper, Mappable } from './Wzuh';
