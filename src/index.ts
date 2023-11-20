@@ -1,1 +1,1 @@
-export { Wzuh } from './Wzuh';
+export { Mapper } from './Wzuh';

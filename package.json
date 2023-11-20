@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts",
+    "start": "nodemon --exec ts-node examples/test.ts",
     "build": "tsc",
     "prebuild": "rimraf dist/"
   },
@@ -13,13 +13,17 @@
     "@types/node": "^18.18.9"
   },
   "devDependencies": {
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2",
     "nodemon": "^2.0.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   },
   "files": [
     "dist/**/*"
   ],
-  "keywords": ["typescript", "node", "template"]
+  "keywords": [
+    "typescript",
+    "node",
+    "template"
+  ]
 }

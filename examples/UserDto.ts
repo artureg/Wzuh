@@ -1,10 +1,6 @@
 import {UserEntity} from "./UserEntity";
-import {Wzuh} from "../src";
+import { Mapper } from '../src/Wzuh';
 
-@Wzuh({
-  firstName: "lastName",
-  lastName: "firstName",
-})
 export class UserDto {
   constructor(params?: UserEntity | { email: string; password: string; }) {}
 
@@ -17,4 +13,12 @@ export class UserDto {
   address!: string;
   postalCode!: string;
   birthDate!: Date;
+  fullName!: string;
+
+  @Mapper({
+    firstName: 'lastName',
+    lastName: 'firstName',
+    address: 'address.street',
+  })
+  static fromUserEntity(userEntity: UserEntity) {}
 }

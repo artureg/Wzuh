@@ -3,7 +3,10 @@ export class UserEntity {
   constructor({country, city, address, postalCode, birthDate, email, firstName, lastName, phone, password}: {
     country: string;
     city: string;
-    address: string;
+    address: {
+      street: string,
+      number: string,
+    },
     postalCode: string;
     birthDate: Date;
     email: string;
@@ -31,7 +34,10 @@ export class UserEntity {
   phone!: string;
   country!: string;
   city!: string;
-  address!: string;
+  address!: {
+    street: string;
+    number: string;
+  };
   postalCode!: string;
   birthDate!: Date;
 }
