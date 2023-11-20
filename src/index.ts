@@ -1,2 +1,1 @@
-import "reflect-metadata";
-export { Mapper, Mappable } from './Wzuh';
+export { Mapper } from './Wzuh';

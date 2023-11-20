@@ -12,16 +12,19 @@ console.log(JSON.stringify(user2));
 
 
 const entity3 = new UserEntity({
-  country: "123",
-  city: "123",
-  address: "123",
-  postalCode: "123",
+  country: "count",
+  city: "cit",
+  address: {
+    street: "AdrStr",
+    number: "AdrNum",
+  },
+  postalCode: "pCode",
   birthDate: new Date(),
-  email: "123",
+  email: "e-mai.l",
   firstName: "fN",
   lastName: "lN",
-  phone: "123",
-  password: "123"
+  phone: "+phone",
+  password: "qwerty134"
 })
 const user3 = UserDto.fromUserEntity(entity3);
 console.log(JSON.stringify(user3));

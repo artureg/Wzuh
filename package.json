@@ -10,8 +10,7 @@
     "prebuild": "rimraf dist/"
   },
   "dependencies": {
-    "@types/node": "^18.18.9",
-    "reflect-metadata": "^0.1.13"
+    "@types/node": "^18.18.9"
   },
   "devDependencies": {
     "nodemon": "^2.0.0",
