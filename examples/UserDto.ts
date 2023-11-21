@@ -2,7 +2,7 @@ import {UserEntity} from "./UserEntity";
 import { Mapper } from '../src/Wzuh';
 
 export class UserDto {
-  constructor(params?: UserEntity | { email: string; password: string; }) {}
+  constructor() {}
 
   email!: string;
   firstName!: string;
@@ -16,9 +16,27 @@ export class UserDto {
   fullName!: string;
 
   @Mapper({
-    firstName: 'lastName',
-    lastName: 'firstName',
-    address: 'address.street',
+    map: {
+      email: 'birthDate'
+    }
   })
-  static fromUserEntity(userEntity: UserEntity) {}
+  static fromEmailPasswordObj(params: {email: string, password: number, birthDate: Date}) {}
+
+  @Mapper({
+    map: {
+      firstName: 'lastName',
+      lastName: 'firstName',
+      address: (params: UserEntity) => `${params.address.street} ${params.address.number}`,
+      email: 'address.street',
+      city: {
+        value: 'sdf',
+        nullable: true,
+        optional: true,
+      },
+    },
+    // exclude: ['address'],
+  })
+  static fromUserEntity(userEntity: UserEntity): UserDto {
+    return;
+  }
 }

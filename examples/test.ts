@@ -4,10 +4,10 @@ import {UserEntity} from "./UserEntity";
 console.log("_______________________");
 
 
-const user1 = new UserDto();
-console.log(JSON.stringify(user1));
+// const user1 = new UserDto();
+// console.log(JSON.stringify(user1));
 
-const user2 = new UserDto({email: "123", password: "123"});
+const user2 = UserDto.fromEmailPasswordObj({email: "123", password: 123, birthDate: new Date()});
 console.log(JSON.stringify(user2));
 
 
@@ -28,6 +28,3 @@ const entity3 = new UserEntity({
 })
 const user3 = UserDto.fromUserEntity(entity3);
 console.log(JSON.stringify(user3));
-
-
-//const user4 = new UserDto({});
