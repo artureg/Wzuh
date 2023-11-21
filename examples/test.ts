@@ -1,6 +1,6 @@
 import {UserDto} from "./UserDto";
 
-const userDto = UserDto.fromUserEntity({
+const userDto = UserDto.toUserDto({
   firstName: "firstName",
   lastName: "lastName",
   userName: "userName",
@@ -11,3 +11,14 @@ const userDto = UserDto.fromUserEntity({
 })
 
 console.log(userDto);
+
+
+const obj = UserDto.fromUserDto({
+  firstName: "firstName",
+  lastName: "lastName",
+} as UserDto)
+
+console.log(obj)
+
+
+

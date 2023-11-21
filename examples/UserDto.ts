@@ -21,7 +21,14 @@ export class UserDto {
     },
     exclude: ['lastName']
   })
-  static fromUserEntity(obj: object): UserDto {
+
+  static toUserDto(obj: object): UserDto {
     return;
   }
+
+  static fromUserDto(user: UserDto): {firstName: string, lastName: string} {
+    return;
+  }
+
+
 }
