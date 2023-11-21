@@ -1,42 +1,27 @@
+import { Mapper } from '../src';
 import {UserEntity} from "./UserEntity";
-import { Mapper } from '../src/Wzuh';
 
 export class UserDto {
-  constructor() {}
-
-  email!: string;
-  firstName!: string;
-  lastName!: string;
-  phone!: string;
-  country!: string;
-  city!: string;
-  address!: string;
-  postalCode!: string;
-  birthDate!: Date;
-  fullName!: string;
-
-  @Mapper({
-    map: {
-      email: 'birthDate'
-    }
-  })
-  static fromEmailPasswordObj(params: {email: string, password: number, birthDate: Date}) {}
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  address: string;
 
   @Mapper({
     map: {
       firstName: 'lastName',
-      lastName: 'firstName',
-      address: (params: UserEntity) => `${params.address.street} ${params.address.number}`,
-      email: 'address.street',
-      city: {
-        value: 'sdf',
-        nullable: true,
-        optional: true,
+      fullName: {
+        value: (params: any) => `${params.firstName} ${params.lastName}`,
       },
+      address: {
+        value: 'address.street',
+        optional: false,
+        nullable: false,
+      }
     },
-    // exclude: ['address'],
+    exclude: ['lastName']
   })
-  static fromUserEntity(userEntity: UserEntity): UserDto {
+  static fromUserEntity(obj: object): UserDto {
     return;
   }
 }

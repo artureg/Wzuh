@@ -21,7 +21,10 @@ export function Mapper({
       const result =  new target();
       if (keysMap && params && typeof params === 'object') {
         keysMap.forEach((mapFrom, key) => {
-          result[key] = getValue(params, mapFrom);
+          const value = getValue(params, mapFrom);
+          if (value !== undefined) {
+            result[key] = getValue(params, mapFrom);
+          }
         })
       }
       return result;
@@ -52,6 +55,9 @@ const getValue = (params: object, key: KeysMapValue) => {
     let currValue: object | string = params;
 
     keys.forEach((key) => {
+      if (currValue === null || currValue === undefined) {
+        return;
+      }
       if (currValue.hasOwnProperty(key)) {
         currValue = currValue[key];
       } else {
@@ -99,8 +105,7 @@ const prepareKeysMap = (map: {
         ...mapValue,
         type: property.type,
       });
-    } 
-    if (typeof mapValue === 'string') {
+    } else {
       keysMap.set(property.name, {
         value: mapValue,
         type: property.type,
