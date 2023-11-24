@@ -1,13 +1,14 @@
 import {UserDto} from "./UserDto";
+import { UserEntity } from './UserEntity';
 
-const userDto = UserDto.fromUserEntity({
+const userDto = UserDto.fromUserEntity(new UserEntity({
   firstName: "firstName",
   lastName: "lastName",
-  userName: "userName",
   address: {
     street: "street",
-    city: "city",
-  }
-})
+    number: "city",
+  },
+  birthDate: new Date(),
+}))
 
 console.log(userDto);
