@@ -159,9 +159,20 @@ function getPropertiesInfoOfMethodsReturnType(className: string, methodName: str
       throw new Error(`Error reading source file: ${filePath}`);
   }
 
-  const classDeclaration = sourceFile!.statements.find(
-    (statement) => ts.isClassDeclaration(statement) && statement.name.getText() === className
-  ) as ts.ClassDeclaration | undefined;
+  let classDeclaration: ts.ClassDeclaration | undefined;
+
+  visit(sourceFile);
+
+  function visit(node: ts.Node) {
+    if (classDeclaration) {
+      return;
+    }
+    if (ts.isClassDeclaration(node) && node.name.getText() === className) {
+      classDeclaration = node;
+    }
+    ts.forEachChild(node, visit);
+  }
+
   const methodDeclaration = classDeclaration!.members.find(
     (member) => ts.isMethodDeclaration(member) && member.name.getText() === methodName
   ) as ts.MethodDeclaration | undefined;
@@ -174,7 +185,6 @@ function getPropertiesInfoOfMethodsReturnType(className: string, methodName: str
 
     properties.forEach(property => {
         const propertyType = checker.getTypeOfSymbolAtLocation(property, property.valueDeclaration!);
-        const propertyTypeName = checker.typeToString(propertyType);
         
         const typeString = checker.typeToString(propertyType);
         if (isPrimitiveType(typeString)) {
