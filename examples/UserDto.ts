@@ -5,30 +5,44 @@ export class UserDto {
   firstName: string;
   lastName: string;
   fullName: string;
-  address: string;
+  address: {
+    street: string;
+    number: string;
+  };
+  birthDate: Date;
+  postCode: string;
+
+  // @Mapper({
+  //   map: {
+  //     fullName: (obj: any) => `${obj.firstName} ${obj.lastName}`,
+  //     address: (obj: any) => ({
+  //       street: obj.address.street,
+  //       city: obj.address.city,
+  //     })
+  //   }
+  // })
+  // static fromUserEntity(obj: object): UserDto {
+  //   return;
+  // }
 
   @Mapper({
     map: {
-      firstName: 'lastName',
-      fullName: {
-        value: (params: any) => `${params.firstName} ${params.lastName}`,
-      },
+      postCode: 'address.number',
+      fullName: (obj: any) => `${obj.firstName} ${obj.lastName}`,
       address: {
-        value: 'address.street',
-        optional: false,
-        nullable: false,
-      }
-    },
-    exclude: ['lastName']
+        value: {
+          street: (obj: any) => `${obj.firstName} ${obj.lastName}`,
+          number: {
+            value: 'address.number',
+            nullable: false,
+            optional: false,
+          }
+        },
+        nullable: false
+      },
+    }
   })
-
-  static toUserDto(obj: object): UserDto {
+  static fromUserEntity(obj: UserEntity): UserDto {
     return;
   }
-
-  static fromUserDto(user: UserDto): {firstName: string, lastName: string} {
-    return;
-  }
-
-
 }

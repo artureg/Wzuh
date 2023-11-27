@@ -7,7 +7,8 @@
   "scripts": {
     "start": "nodemon --exec ts-node examples/test.ts",
     "build": "tsc",
-    "prebuild": "rimraf dist/"
+    "prebuild": "rimraf dist/",
+    "test": "node --loader tsx --test **/*.test.ts"
   },
   "dependencies": {
     "@types/node": "^18.18.9"
@@ -16,6 +17,7 @@
     "nodemon": "^2.0.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
+    "tsx": "^4.4.0",
     "typescript": "^5.2.2"
   },
   "files": [

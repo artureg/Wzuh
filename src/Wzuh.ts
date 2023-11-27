@@ -14,16 +14,22 @@ export function Mapper({
   const classFile = _getCallerFile();
 
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const propertiesInfo = getPropertiesInfo(target.name, classFile).filter((property) => !exclude.includes(property.name));
+    const propertiesInfo = getPropertiesInfoOfMethodsReturnType(target.name, propertyKey, classFile)
+      .filter((property) => !exclude.includes(property.name));
     const keysMap = prepareKeysMap(map, propertiesInfo);
 
     descriptor.value = (params) => {
-      const result =  new target();
+      const result =  {};
       if (keysMap && params && typeof params === 'object') {
         keysMap.forEach((mapFrom, key) => {
           const value = getValue(params, mapFrom);
           if (value !== undefined) {
-            result[key] = getValue(params, mapFrom);
+            result[key] = value;
+          } else if (mapFrom.propertiesMap) {
+            result[key] = {};
+            mapFrom.propertiesMap.forEach((mapFrom, propertyKey) => {
+              result[key][propertyKey] = getValue(params, mapFrom);
+            });
           }
         })
       }
@@ -33,20 +39,15 @@ export function Mapper({
 }
 
 const getValue = (params: object, key: KeysMapValue) => {
-  if (typeof key.value === 'object') {
-    const value = getValue(params, key.value);
-    if (!key.nullable && value === null) {
-      throw new Error(`Value for key ${key.value} is null`);
-    }
-    if (!key.optional && value === undefined) {
-      throw new Error(`Value for key ${key.value} is undefined`);
-    }
-    return value;
-  }
-
   let value: any;
 
-  if (typeof key.value === 'function') {
+  if (typeof key.value === 'object') {
+    value = {};
+
+    key.value.forEach((mapFrom, key) => {
+      value[key] = getValue(params, mapFrom);
+    });
+  } else if (typeof key.value === 'function') {
     value = key.value(params);
   } else {
     const keys = key.value
@@ -68,6 +69,13 @@ const getValue = (params: object, key: KeysMapValue) => {
     value = currValue;
   }
 
+  if (key.nullable === false && value === null) {
+    throw new Error(`Value for key ${key.value} is null`);
+  }
+  if (key.optional === false && value === undefined) {
+    throw new Error(`Value for key ${key.value} is undefined`);
+  }
+
   if (value === undefined) {
     return;
   }
@@ -87,9 +95,7 @@ const getValue = (params: object, key: KeysMapValue) => {
   return value;
 }
 
-const prepareKeysMap = (map: {
-  [key: string]: MapValue
-}, propertiesInfo: PropertyNameWithType[]) => {
+const prepareKeysMap = (map: MapperMap, propertiesInfo: PropertyNameWithType[]) => {
   const keysMap: KeysMap = new Map();
   propertiesInfo.forEach((property) => {
     if (!map.hasOwnProperty(property.name)) {
@@ -104,6 +110,10 @@ const prepareKeysMap = (map: {
       keysMap.set(property.name, {
         ...mapValue,
         type: property.type,
+        value: 
+          typeof mapValue.value === 'object'
+            ? prepareKeysMap(mapValue.value, property.properties)
+            : mapValue.value,
       });
     } else {
       keysMap.set(property.name, {
@@ -140,52 +150,72 @@ function _getCallerFile() {
   return callerfile;
 }
 
-function getPropertiesInfo(className: string, filePath: string): PropertyNameWithType[] {
+function getPropertiesInfoOfMethodsReturnType(className: string, methodName: string, filePath: string): PropertyNameWithType[] {
   const program = ts.createProgram([filePath], {});
   const checker = program.getTypeChecker();
   const sourceFile = program.getSourceFile(filePath);
 
-  let propertiesInfo: {
-    name: string,
-    type: string,
-  }[] = [];
+  if (!sourceFile) {
+      throw new Error(`Error reading source file: ${filePath}`);
+  }
+
+  let classDeclaration: ts.ClassDeclaration | undefined;
+
+  visit(sourceFile);
 
   function visit(node: ts.Node) {
-    if (ts.isClassDeclaration(node)) {
-      if (node.name && node.name.text === className) {
-        ts.forEachChild(node, (childNode) => {
-          if (ts.isPropertyDeclaration(childNode) && childNode.name && ts.isIdentifier(childNode.name)) {
-            propertiesInfo.push({
-              name: childNode.name.text,
-              type: convertTypeToPrimitive(checker.typeToString(checker.getTypeAtLocation(childNode))),
-            });
-          }
-        });
-      }
+    if (classDeclaration) {
+      return;
+    }
+    if (ts.isClassDeclaration(node) && node.name.getText() === className) {
+      classDeclaration = node;
     }
     ts.forEachChild(node, visit);
   }
 
-  function convertTypeToPrimitive(type: string) {
-    if ([
-      'string',
-      'number',
-      'bigint',
-      'boolean',
-      'symbol',
-      'undefined',
-    ].includes(type)) {
-      return type;
-    }
+  const methodDeclaration = classDeclaration!.members.find(
+    (member) => ts.isMethodDeclaration(member) && member.name.getText() === methodName
+  ) as ts.MethodDeclaration | undefined;
 
-    return 'object'
+  const returnType = checker.getReturnTypeOfSignature(checker.getSignatureFromDeclaration(methodDeclaration!));
+
+  function getPropertiesAndTypes(type: ts.Type, checker: ts.TypeChecker) {
+    const properties = type.getProperties();
+    const propertiesInfo: PropertyNameWithType[] = []
+
+    properties.forEach(property => {
+        const propertyType = checker.getTypeOfSymbolAtLocation(property, property.valueDeclaration!);
+        
+        const typeString = checker.typeToString(propertyType);
+        if (isPrimitiveType(typeString)) {
+          propertiesInfo.push({
+            name: property.getName(),
+            type: typeString,
+            properties: []
+          });
+          return;
+        }
+        // console.log(checker.)
+        propertiesInfo.push({
+          name: property.getName(),
+          type: 'object',
+          properties: getPropertiesAndTypes(propertyType, checker),
+        });
+    });
+
+    return propertiesInfo;
   }
 
-  if (sourceFile) {
-    visit(sourceFile);
-  } else {
-    console.error(`Error reading source file: ${filePath}`);
-  }
+  return getPropertiesAndTypes(returnType, checker);
+}
 
-  return propertiesInfo;
+function isPrimitiveType(type: string) {
+  return [
+    'string',
+    'number',
+    'bigint',
+    'boolean',
+    'symbol',
+    'undefined',
+  ].includes(type);
 }
